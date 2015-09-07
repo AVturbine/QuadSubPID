@@ -16,6 +16,11 @@ int accy = A2;
 float accz = A3;
 int accgnd = A4;
 
+int motorSettingFL = 255;
+int motorSettingFR = 255;
+int motorSettingBL = 255;
+int motorSettingBR = 255;
+
 float getAccel(char axis) {
  switch (axis) {
    case 'x':{
@@ -38,29 +43,55 @@ float getAccel(char axis) {
    }
  }
 }
-float pid(float actual) {
+float pid(float actual, float kp, float ki, float kd) {
   float olddiff;
   float diff = actual - 1; // 1g is our setpoint
   float sum = sum + diff; // Making the sum for the "
   float deltadiff = diff - olddiff;
-  olddiff = diff
-  float output = kp*diff + ki*sum + kd*deltadiff ;
-  
+  olddiff = diff;
+  float output = kp*diff + ki*sum + kd*deltadiff;
+  return output;
 }
   
-
+void xcontrol(){
+  motorSettingFL = motorSettingFL + 3*pid(getAccel('x'), 1, 3, 5);
+  motorSettingFR = motorSettingFR + 3*pid(getAccel('x'), 1, 3, 5);
+  motorSettingBL = motorSettingBL - 3*pid(getAccel('x'), 1, 3, 5);
+  motorSettingBR = motorSettingBR - 3*pid(getAccel('x'), 1, 3, 5);
+  analogWrite(motorFL, motorSettingFL);
+  analogWrite(motorFR, motorSettingFR);
+  analogWrite(motorBL, motorSettingBL);
+  analogWrite(motorBR, motorSettingBR);
+  
+}
+void ycontrol(){
+  motorSettingFL = motorSettingFL + 3*pid(getAccel('y'), 1, 3, 5);
+  motorSettingFR = motorSettingFR - 3*pid(getAccel('y'), 1, 3, 5);
+  motorSettingBL = motorSettingBL + 3*pid(getAccel('y'), 1, 3, 5);
+  motorSettingBR = motorSettingBR - 3*pid(getAccel('y'), 1, 3, 5);
+  analogWrite(motorFL, motorSettingFL);
+  analogWrite(motorFR, motorSettingFR);
+  analogWrite(motorBL, motorSettingBL);
+  analogWrite(motorBR, motorSettingBR);
+}
+    
 void setup() {
   Serial.begin(9600);
   pinMode(accvcc, OUTPUT);
   pinMode(accgnd, OUTPUT);
   digitalWrite(accvcc, HIGH); //establishing 5v to the accel breakout
   digitalWrite(accgnd, LOW); //And sinking it, too
-
+  
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  float x = getAccel('x');
-  Serial.println(x);
-  delay(500);
+  xcontrol();
+  ycontrol();
+   motorSettingFL = 255;
+ motorSettingFR = 255;
+ motorSettingBL = 255;
+ motorSettingBR = 255;
+  
 }
