@@ -88,10 +88,13 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   xcontrol();
+  delay(10);
   ycontrol();
-   motorSettingFL = 255;
+  delay(10);
+ motorSettingFL = 255;
  motorSettingFR = 255;
  motorSettingBL = 255;
  motorSettingBR = 255;
+ delay(10);
   
 }
